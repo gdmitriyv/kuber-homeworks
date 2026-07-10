@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: netology-svc
+spec:
+  selector:
+    app: netology-echo
+  ports:
+  - port: 80         # Порт, который теперь слушает сам Сервис внешне
+    targetPort: 8080 # Порт внутри контейнера Pod'а, куда перенаправлять трафик
