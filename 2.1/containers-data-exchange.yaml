@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-exchange
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shared-data-app
+  template:
+    metadata:
+      labels:
+        app: shared-data-app
+    spec:
+      containers:
+      - name: writer-busybox
+        image: busybox
+        command: ["/bin/sh", "-c"] 
+        args: ["while true; do echo $(date) >> /var/log/shared/data.log; sleep 5; done"]
+        volumeMounts:
+        - name: ephemeral-storage
+          mountPath: /var/log/shared
+      - name: reader-multitool
+        image: wbitt/network-multitool
+        command: ["/bin/sh", "-c"]
+        args: ["tail -f /var/log/shared/data.log"]
+        volumeMounts:
+        - name: ephemeral-storage
+          mountPath: /var/log/shared
+      volumes:
+      - name: ephemeral-storage
+        emptyDir: {}
